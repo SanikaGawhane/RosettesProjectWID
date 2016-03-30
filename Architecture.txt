@@ -1,0 +1,28 @@
+1 Done save ND2 files to tiff 
+2 make the algo modular
+3 Test voting on zero, one , two 3 and 4
+4 ctFIRE - change to mask the fibers with -1 and +1
+  Figure out a way to calculate fiber angles 
+5 
+
+Architecture
+1 classifier 1-voting
+Input - image name
+Output - metadata VotingData - field1 - slices
+	            field2 - weights of each slice 
+  		    field3 - voted mask
+	            field4 - individual maskss
+
+2 classifier - inputs- FireData
+  1. Image name, path 
+  2. metadata from previous 
+
+  3. internally derived ctFIRE
+
+  Output - metadata2 fireData- fields
+  1. list of fibers
+  2. vertices of fibers
+  3. mask made from ellipse, tolerance level
+  4. angle data of all fibers with respect to boundary
+		    
+ classifier 2 basis - angle - 80 to 100 and num of fibers>10

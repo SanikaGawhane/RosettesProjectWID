@@ -1,0 +1,157 @@
+% adding path to ctFIRE
+%addpath('C:\Users\SanikaGawhane\Desktop\UWLOCI\curvelets\ctFIRE');
+
+clc
+close all
+clear all
+
+[filename,pathname,filterindex]=uigetfile({'*.png';'*.tiff';'*.jpg';'*.jpeg'},'Select image');
+
+
+for k = 1:7
+    filename2=fullfile(pathname,filename);
+    filename2=filename2(1:end-10);
+    filename2=[filename2 num2str(k) '_c002.png'];
+    temp=double(imread(filename2));
+    
+    temp = medfilt2(temp,[3,3]);
+    temp = temp-min(temp(:));
+   z(:,:,k) = temp/max(temp(:));
+end
+% z has the normalized image
+x = sum(z,3);
+x = x/max(x(:));
+
+% compressing the stack to one image and normalizing it
+temp = mean(x,3);
+temp = temp/max(temp(:));
+hist_eq = hist(temp(:)/max(temp(:)),50);
+z(:,:,8) = temp;
+
+[r_z c_z]=size(z);
+mask=zeros(r_z);mask_temp=zeros(r_z);
+
+new_M = zeros(r_z);
+for k = 1:7
+   z1 = histeq(z(:,:,k),hist_eq)*255;
+   z5 = conv2(z1,fspecial('gaussian',[20,20],1),'same');
+   % Area specified as RegionArea/ImageArea
+   [r,f] = vl_mser(uint8(z5),'MinArea',0.006,'MaxArea',0.015,'BrightOnDark',1);
+   f = vl_ertr(f);
+   vl_plotframe(f);
+
+   M = zeros(size(z5)) ;
+   for y=r'
+       s = vl_erfill(uint8(z5),y);
+       if (k>2) && (k<6) 
+       M(s) = M(s) + 2;
+       else
+       M(s) = M(s) + 1;
+        end
+   end
+  
+new_M = new_M+M;
+figure;
+% clf; imagesc(z5); hold on; axis equal off; colormap gray;
+[c,h]=contour(M,(0:max(M(:))));
+set(h,'color','y','linewidth',1) ;
+end
+
+figure(9)
+% imshow(new_M);title('Detected Regions');
+
+[r_M c_M] = size(new_M);
+for i=1:r_M
+    for j=1:c_M
+        if new_M(i,j)<4   %if detected less than 7 times, eliminate that region 
+           new_M(i,j)=logical(0);  %and force its pixel value as zero
+        end
+    end
+end
+
+figure;
+% imshow(new_M);title('Detected Regions after voting');
+
+ se=strel('disk',5);
+ new_M=logical(new_M);mask2=new_M;
+ for i=1:4
+    mask2=imdilate(mask2,se);imshow(mask2);title('snfl');pause(0.1);
+ end
+ for(i=1:4)
+    mask2=imerode(mask2,se);pause(0.1);
+ end
+ 
+ 
+ 
+ %mask2=imfill(mask2);figure;imshow(mask2);title('filled holes');
+ 
+ %Final detected region(s)
+%  im_new=~new_M;
+%  im_new=~im_new;
+%  
+%  figure
+%  imshow(im_new);
+
+ mask=new_M;figure;imshow(mask);title('Input to fiber check');
+% [r_r r_c]=size(r); %number of seed regions
+% cnt = r_r;
+%    for i=1:cnt  %Number of regions detected
+%     
+%        a = regions.PixelList(i,1);
+%     [r_a c_a] = size(a);
+%     for j=1:r_a
+%         v=a(j,1);
+%         u=a(j,2);
+%         if (k>2) && (k<6)
+%             mask_temp(u,v)=2;
+%         else
+%             mask_temp(u,v)=1;
+%         end
+%     end
+%    end     
+%    mask=mask+mask_temp;
+%    
+%    if (k>2) && (k<6)
+%        im_temp=im_temp+mask;
+%    end
+% 
+% %New image before voting procedure with all detected regions
+% subplot(258);hold off
+% imagesc((mask));axis image;colormap gray;title('Detected Region(s)');
+% 
+% subplot(259);hold off
+% imagesc((im_temp));axis image;colormap gray;title('Stack 3,4,5');
+% 
+% im_new=temp;%temp stores the mean value of pixels along all the stacks
+%  [r_im c_im]=size(im_new);
+% % 
+% 
+% % 
+% % %Final detected region(s)
+% im_new=~im_new;
+% im_new=~im_new;
+% subplot(2,5,10);hold off
+% imagesc((im_new));axis image;colormap gray;title('Detected Region(s) after voting');
+
+% savePath=fullfile(pathname,[filename(1:end-5) 'Classifier1.tif']);
+% imwrite(uint8(255*im_new),savePath);
+%ctFIRE;
+
+%fibrous_rossette_present=FibrousRossetteCheck_v4(im_new,pathname,filename);
+
+%% 
+
+[s1Image,s2Image]=size(new_M);%default
+    % boundary contains two columns of x and y coordinates of all bnd points
+    B=bwboundaries(mask);
+    mask2=mask;
+    for k2 = 1:length(B),
+        kip = B{k2};
+        boundaryCell{k2}=kip;
+    end
+    
+    %need to smooth the boundary
+    figure;imagesc(mask);hold on;colormap gray;
+    imgPath=fullfile(pathname,[filename(1:end-5),'mean.tif']);
+    figure;imshow(imread(imgPath));hold on;
+    imwrite(mask2,imgPath);

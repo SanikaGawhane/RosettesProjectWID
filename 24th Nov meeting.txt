@@ -1,0 +1,13 @@
+1 average length of curvelets 
+2 more images
+3 
+
+1 make fiber intersection method more robust
+2 define pipeline for voting and then fiber 
+3 display techniques for rossettes 
+4 Incorporate Sethares' code 
+5 rossettes can be shape other than ellipses also -
+
+Output - area , fiber geometries and statistics
+ 
+Go for ellipses
