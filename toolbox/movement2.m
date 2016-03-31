@@ -72,8 +72,7 @@ function [ avg_angle] = movement2( maskName,imageName)
 %                 radius=sqrt(x^2+y^2);
 %                 finalRadius=radius+ratio*boxSize;
 
-                xBox=boundary(i,1);
-                
+                       
                 
                 xBox=floor(xc(k)+finalRadius*cos(angle_centr(i,k)));
                 yBox=floor(yc(k)+finalRadius*sin(angle_centr(i,k)));

@@ -117,13 +117,13 @@ mask = im2double(mask);
  end
 mask=imfill(mask,'holes');
 subplot(223);imshow(mask);
-imgPath_mask=fullfile(pathname,[filename(1:end-5) 'mask.tif']);
-imwrite(mask,imgPath_mask);
+imgPath_maskName=fullfile(pathname,[filename(1:end-5) 'mask.tif']);
+imwrite(mask,imgPath_maskName);
 
-imgPath_mean=fullfile(pathname,[filename(1:end-5) 'mean.tif']);
-imwrite(x,imgPath_mean);
+imgPath_meanName=fullfile(pathname,[filename(1:end-5) 'mean.tif']);
+imwrite(x,imgPath_meanName);
 
-avgangle= movement2(imgPath_mask,imgPath_mean);
+avgangle= movement2(imgPath_maskName,imgPath_meanName);
 avg_angle=[avg_angle avgangle];
 
 cc = bwconncomp(mask);
