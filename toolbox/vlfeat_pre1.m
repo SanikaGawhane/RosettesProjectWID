@@ -105,27 +105,29 @@ end
 
 %figure;%%2
 subplot(222);imshow(mask);title('Detected Regions after voting');
-mask = bwareaopen(mask, 6500);title('Removing small components');%binarizes mask2
-mask = im2double(mask);
 
- se=strel('disk',5);
- for i=1:4
+se=strel('disk',5);
+ for i=1:5
     mask=imdilate(mask,se);
  end
- for(i=1:4)
+ for i=1:5
     mask=imerode(mask,se);%pause(0.1);
  end
 mask=imfill(mask,'holes');
 subplot(223);imshow(mask);
-imgPath_maskName=fullfile(pathname,[filename(1:end-5) 'mask.tif']);
-imwrite(mask,imgPath_maskName);
+mask = bwareaopen(mask, 10000);title('Removing small components');%binarizes mask2
+mask = im2double(mask);
 
-imgPath_meanName=fullfile(pathname,[filename(1:end-5) 'mean.tif']);
-imwrite(x,imgPath_meanName);
+% imgPath_maskName=fullfile(pathname,[filename(1:end-5) 'mask.tif']);
+% imwrite(mask,imgPath_maskName);
+% 
+% imgPath_meanName=fullfile(pathname,[filename(1:end-5) 'mean.tif']);
+% imwrite(x,imgPath_meanName);
 
-avgangle= movement2(imgPath_maskName,imgPath_meanName);
-avg_angle=[avg_angle avgangle];
+%avgangle= movement2(imgPath_maskName,imgPath_meanName);
+%avg_angle=[avg_angle avgangle];
 
+avg_angle= huggingBoundary(mask,x);
 cc = bwconncomp(mask);
 stats = regionprops(cc, 'Area','MajorAxisLength','MinorAxisLength');
 sizeStats = size(stats);
@@ -134,7 +136,7 @@ for s=1:sizeStats(1)
     circularity1(s)=stats(s).MajorAxisLength/stats(s).MinorAxisLength;
     circularity=[circularity circularity1(s)];
 end
-idx = find([stats.Area] > 6000);
+idx = find([stats.Area] >10000);
 BW2 = ismember(labelmatrix(cc), idx);
 %figure; imshow (BW2);
 ros(num_i) = cc.NumObjects

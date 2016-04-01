@@ -1,4 +1,4 @@
-function[avg_angle]=huggingBondary(mask,image)
+function[avg_angle]=huggingBoundary(mask,image)
 %     image=imread('image.tif');
 %     mask=imread('mask.tif');
     mask=logical(mask);
