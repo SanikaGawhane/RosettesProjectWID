@@ -12,10 +12,10 @@ option = 1;
 thr=40;
 avg_angle=[];
 
-% results_file = 'results_new_v4.xlsx';
-% col = {'Filename','Num_of_Ros_present','Num_of_ros_detected','Circularity','Avg_angle','MSE'};
-% first_cell = 'A1';
-% xlswrite(results_file,col,1,first_cell);
+results_file = 'results_04/01.xlsx';
+col = {'Filename','Num_of_Ros_present','Num_of_ros_detected','Circularity','Avg_angle','MSE'};
+first_cell = 'A1';
+xlswrite(results_file,col,1,first_cell);
 
 % main_folder=uigetdir;
 % subfolders=dir(main_folder);
@@ -74,7 +74,7 @@ for k = 1:no_of_slices
    for y=r'
        s = vl_erfill(uint8(z5),y);
        M(s)=M(s)+1;
-       figure;imagesc(M);colorbar;%for testing
+       %figure;imagesc(M);colorbar;%for testing
    end
    %make the pixel values to 1 here
    for i1=1:r_z
@@ -115,7 +115,7 @@ se=strel('disk',5);
  end
 mask=imfill(mask,'holes');
 subplot(223);imshow(mask);
-mask = bwareaopen(mask, 10000);title('Removing small components');%binarizes mask2
+mask = bwareaopen(mask, 8000);title('Removing small components');%binarizes mask2
 mask = im2double(mask);
 
 % imgPath_maskName=fullfile(pathname,[filename(1:end-5) 'mask.tif']);
@@ -136,7 +136,7 @@ for s=1:sizeStats(1)
     circularity1(s)=stats(s).MajorAxisLength/stats(s).MinorAxisLength;
     circularity=[circularity circularity1(s)];
 end
-idx = find([stats.Area] >10000);
+idx = find([stats.Area] >=8000);
 BW2 = ismember(labelmatrix(cc), idx);
 %figure; imshow (BW2);
 ros(num_i) = cc.NumObjects
@@ -147,10 +147,10 @@ err_in_det(num_i) = abs(actual_ros(num_i) - ros(num_i));
 sq_err(num_i) = err_in_det(num_i).*err_in_det(num_i);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%Write data into excel file%%%%%%%%%%%%%%%%%%%%%%%%
-% str_angle=mat2str(avgangle);
-% str_circ=mat2str(circularity);
-% results ={filename,str2num(filename(1)),ros(num_i),str_circ,str_angle,sq_err(num_i)};
-% xlswrite(results_file,results,1,['A' num2str(num_i+1)]);
+str_angle=mat2str(avg_angle);
+str_circ=mat2str(circularity);
+results ={filename,str2num(filename(1)),ros(num_i),str_circ,str_angle,sq_err(num_i)};
+xlswrite(results_file,results,1,['A' num2str(num_i+1)]);
 
 end
 

@@ -9,5 +9,6 @@ for i=1:s1
     end
 end
 avg_angle = sum/count;
+avg_angle = abs(avg_angle-90);
 %if isnan(avg_angle)
 end
